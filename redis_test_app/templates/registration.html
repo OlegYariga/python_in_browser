@@ -1,0 +1,71 @@
+{% extends 'header.html' %}
+
+<body>
+{% block content %}
+<div class="jumbotron" id="top-jumbotron">
+  <p class="lead">&nbsp;</p>
+  <h1 class="display-5">Зарегистрируйтесь, чтобы продолжить обучение</h1>
+  <hr class="my-4">
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+      <div class="row">
+        <div class="col">
+            {{ form.first_name.errors }}
+            <input type="text" name="first_name" maxlength="255" required id="id_first_name"
+                   class="form-control" placeholder="Имя"
+                   value="{% if form.first_name.value != None %}{{form.first_name.value}}{% endif %}">
+        </div>
+        <div class="col">
+            {{ form.last_name.errors }}
+            <input type="text" name="last_name" maxlength="255" required id="id_last_name"
+                   class="form-control" placeholder="Фамилия"
+                   value="{% if form.last_name.value != None %}{{form.last_name.value}}{% endif %}">
+        </div>
+      </div>
+        <br>
+        <div class="row">
+        <div class="col">
+            {{ form.username.errors }}
+            <input type="email" name="username" maxlength="254" required id="id_username"
+                   class="form-control" placeholder="Адрес электронной почты"
+                   value="{% if form.username.value != None %}{{form.username.value}}{% endif %}">
+        </div>
+      </div>
+        <br>
+        <div class="row">
+        <div class="col">
+            {{ form.password.errors }}
+            <input type="password" name="password" maxlength="255" required id="id_password"
+                   class="form-control" placeholder="Пароль"
+                   value="{% if form.password.value != None %}{{form.password.value}} {% endif %}">
+        </div>
+      </div>
+
+        <br>
+        <div class="row">
+        <div class="col">
+            {{ form.status.errors }}
+            <select name="status" maxlength="255" required id="id_status" class="form-control" placeholder="Статус">
+              <option>Студент</option>
+              <option>Самостоятельное обучение</option>
+            </select>
+        </div>
+      </div>
+
+        <br>
+        <div class="row">
+        <div class="col">
+            {{ form.group.errors }}
+            <input type="number" name="group" required id="id_group"
+                   class="form-control" placeholder="Номер группы"
+                   value="{% if form.group.value != None %}{{form.group.value}} {% endif %}">
+        </div>
+      </div>
+        <br>
+        <button type="submit" class="btn btn-primary" >Зарегистрироваться</button>
+    </form>
+</div>
+{% endblock %}
+</body>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" type="text/javascript"></script>
+<script src="http://www.skulpt.org/js/skulpt.min.js" type="text/javascript"></script>
+<script src="http://www.skulpt.org/js/skulpt-stdlib.js" type="text/javascript"></script>
+</head>
+<style>
+.blocks{
+    margin: 20px;
+}
+.card-link{
+        color: black;
+    }
+.menu{
+    position: fixed;
+    display: inline-block;
+    top: 0;
+    height: 100%;
+    overflow: auto;
+}
+
+
+#top-jumbotron {
+    margin-left: 18rem; margin-right: 7rem;
+    padding-top: 0;
+    background-color: #fff;
+}
+
+.container{
+}
+
+pre{
+    font-family: "Bodoni MT", Didot, "Didot LT STD", "Book Antiqua", Garamond, "Times New Roman", serif;
+    font-size: 100%;
+    background-color:black;
+    color:white;
+    width: 100%;
+}
+
+textarea{
+    font-family: "Bodoni MT", Didot, "Didot LT STD", "Book Antiqua", Garamond, "Times New Roman", serif;
+    font-size: 100%;
+    background-color:black;
+    color:white;
+    width: 100%;
+    min-height: 10rem;
+    max-height: 50rem;
+}
+p{
+    text-align: justify;
+}
+</style>
+{% load static  %}
+<script src='{% static "js/skulpt.min.js" %}' type="text/javascript"></script>
+<script src='{% static "js/skulpt-stdlib.js" %}' type="text/javascript"></script>
+<body>
+    <nav class="navbar navbar-light bg-white">
+      <span class="navbar-brand mb-0 h1"></span>
+        {% if request.user.is_authenticated %}
+        <form class="form-inline">
+            <a href="#" style="color: black;">{{user.username}}</a>
+            <button class="btn btn-outline-secondary blocks" type="button" onclick="location.href='/logout/'">Выйти</button>
+        </form>
+        {% else %}
+        <form class="form-inline">
+            <a href="/registration/" style="color: black;">Регистрация</a>
+            <button id="enter_auth" class="btn btn-outline-secondary blocks" type="button" data-toggle="modal" data-target="#exampleModal">Войти</button>
+        </form>
+        {% endif %}
+
+    </nav>
+        <div class="card menu" style="width: 18rem;">
+          <div class="card-body">
+              <h5 class="card-title">Python и экспериментальные исследования.</h5> </br>
+              <h6><a href="/setenviroment/" class="card-link">Глава 1. Введение в программирование Python</a></h6> </br>
+              <h7><a href="/setenviroment/" class="card-link">Настраиваем среду разработки</a></h7> </br>
+              </br><h7><a href="/baseconstructions/" class="card-link">Основные языковые конструкции</a></h7> </br>
+              </br><h7><a href="/matplotlib/" class="card-link">Построение графиков. Библиотека matplotlib</a></h7> </br>
+
+
+              </br><h6><a href="/datacollect/" class="card-link">Глава 2. Получение и визуализация данных эксперимента</a></h6> </br>
+              <h7><a href="/datacollect/" class="card-link">Подключение устройства сбора данных NI USB 6351 </a></h7> </br>
+              </br><h7><a href="/datasave/" class="card-link">Сохранение данных в файл</a></h7> </br>
+              </br><h7><a href="/dataload/" class="card-link">Загрузка данных из файла и их визуализация</a></h7> </br>
+              </br><h7><a href="/python_and_osc/" class="card-link">Работаем с осциллографом на Python</a></h7> </br>
+              </br><h7><a href="/comments/" class="card-link">Комментарии</a></h7> </br>
+
+
+              </br><h6><a href="/smoothing/" class="card-link">Глава 3. Обработка результатов эксперимента</a></h6> </br>
+              <h7><a href="/smoothing/" class="card-link">Сглаживание экспериментальных данных</a></h7> </br>
+              </br><h7><a href="/gaussian/" class="card-link">Разбиение спектральных кривых на гауссианы</a></h7> </br>
+              </br><h7><a href="/jdx/" class="card-link">Работа с файлами данных формата JDX</a></h7> </br>
+
+              </br><h6><a href="/managering_program/" class="card-link">Глава 4. Автоматизация спектроскопического эксперимента</a></h6> </br>
+              <h7><a href="/managering_program/" class="card-link">Проектирование управляющей программы</a></h7> </br>
+              </br><h7><a href="/arduino/" class="card-link">Взаимодействие с контроллером Arduino</a></h7> </br>
+              </br><h7><a href="/ni/" class="card-link">Работа с платой сбора данных National Instruments</a></h7> </br>
+              </br><h7><a href="/detection/" class="card-link">Режим измерения</a></h7> </br>
+              </br><h7><a href="/view_and_save_results/" class="card-link">Просмотр и сохранение результатов измерений</a></h7> </br>
+              </br><h7><a href="/database/" class="card-link">Организация работы с базой данных</a></h7> </br>
+              </br><h7><a href="/final_comments/" class="card-link">Заключительные комментарии</a></h7> </br>
+          </div>
+        </div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Авторизация</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form action="/login/"  method="POST">
+              {% csrf_token %}
+              {{ msg }}
+              {{ form.non_field_errors }}
+            <div class="row">
+            <div class="col">
+                {{ form.username.errors }}
+                <input type="email" name="username" maxlength="254" required id="id_username"
+                       class="form-control" placeholder="Адрес электронной почты"
+                       value="{% if form.username.value != None %}{{form.username.value}}{% endif %}">
+            </div>
+          </div>
+            <br>
+            <div class="row">
+            <div class="col">
+                {{ form.password.errors }}
+                <input type="password" name="password" maxlength="255" required id="id_password"
+                       class="form-control" placeholder="Пароль"
+                       value="{% if form.password.value != None %}{{form.password.value}} {% endif %}">
+            </div>
+          </div>
+          </div>
+        <br>
+            <button type="submit" class="btn btn-primary" style="
+                    width: 50%;
+                    position: relative;
+                    left: 50%;
+                    transform: translate(-50%, 0);">Войти</button>
+         <br>
+        </form>
+    </div>
+  </div>
+</div>
+    <script type="text/javascript">
+var oout_global;
+function outf(text) {
+    var mypre = document.getElementById(oout_global);
+    mypre.innerHTML = mypre.innerHTML + text;
+}
+function builtinRead(x) {
+    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+            throw "File not found: '" + x + "'";
+    return Sk.builtinFiles["files"][x];
+}
+function runit(yourcode, ooutput, mycanv) {
+    oout_global = ooutput;
+   var prog = document.getElementById(yourcode).value;
+   var mypre = document.getElementById(ooutput);
+   mypre.innerHTML = '';
+   Sk.pre = ooutput;
+   Sk.configure({output:outf, read:builtinRead});
+   (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = mycanv;
+   var myPromise = Sk.misceval.asyncToPromise(function() {
+       return Sk.importMainWithBody("<stdin>", false, prog, true);
+   });
+   myPromise.then(function(mod) {
+       console.log('success');
+   },
+       function(err) {
+       console.log(err.toString());
+   });
+}
+
+</script>
+    {% if begin_auth %}
+<script>
+      document.getElementById('enter_auth').click();
+</script>
+    {% endif %}
+        {% block content %}
+        {% endblock %}
+</body>
+</html>
