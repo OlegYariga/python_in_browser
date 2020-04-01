@@ -1,0 +1,66 @@
+{% extends 'header.html' %}
+
+<body>
+{% block content %}
+<div class="jumbotron" id="top-jumbotron">
+  <p class="lead">&nbsp;</p>
+  <h1 class="display-5">{{questions.first.test.test_name}}</h1>
+  <hr class="my-4">
+    {% if request.method == 'GET' %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for question in questions %}
+            <h5><p>{{question}}</p></h5>
+            {% for answer in answers %}
+                {% if answer.question == question %}
+                    <p><input type="checkbox" name="{{question.id}}-module_name" id="id_{{question.id}}-module_name"
+                              value="{{answer}}"> {{answer}}</p>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        <button type="submit" class="btn btn-primary" >Отправить</button>
+    </form>
+    {% else %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for question in questions %}
+        {% if question in right_questions %}
+            <h5><p style="color:green;">{{question}}</p></h5>
+        {% else %}
+            <h5><p style="color:red;">{{question}}</p></h5>
+        {% endif %}
+            {% for answer in answers %}
+                {% if answer.question == question %}
+                    <p>{{answer}}</p>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        <br>
+         <h5> Ваш результат - <span style="color:green;">{{result}}</span>%</h5>
+        <!--
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for question in questions %}
+            <h5><p>{{question}}</p></h5>
+            {% for answer in answers %}
+                {% for right_ans in question_answers %}
+                    {% for r_ans in right_ans %}
+                        {% for u_ans in user_answers %}
+                            {% if answer.question == question and r_ans.question == question and r_ans.answer in u_ans %}
+                                <p style="color:green;">{{answer.answer}}</p>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+
+        {% endfor %}-->
+    </form>
+
+    {% endif %}
+
+</div>
+{% endblock %}
+</body>

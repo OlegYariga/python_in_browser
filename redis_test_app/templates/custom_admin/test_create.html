@@ -1,0 +1,76 @@
+{% extends 'header.html' %}
+
+<body>
+{% block content %}
+<div class="jumbotron" id="top-jumbotron">
+    <h1 class="display-5">Конструктор тестов</h1>
+  <p class="lead">&nbsp;</p>
+     <form method="POST">
+
+    <h1 class="display-5">
+        <input type="text" name="module_name" required id="id_module_name"
+                   class="form-control" placeholder="Название модуля"
+                    value="{% if test_form.module_name.value != None %}{{test_form.module_name.value}}{% endif %}"></h1>
+        <input type="text" name="test_name" required id="id_test_name"
+                   class="form-control" placeholder="Название теста"
+                    value="{% if test_form.test_name.value != None %}{{test_form.test_name.value}}{% endif %}"></h1>
+    <hr class="my-4">
+         {% for q in question_nums %}
+         <br>
+            {{q}}.<textarea style="background-color: white; color: black; border-radius: 10px;"
+                   placeholder="Текст вопроса" name="{{q}}-question" id="id_{{q}}-question"></textarea>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <input type="checkbox" aria-label="Отметить как правильный"
+                               name="{{q}}-check" id="id_{{q}}-check" value="1">
+                    </div>
+                </div>
+                <input type="text" class="form-control" aria-label="Text input with checkbox"
+                       name="{{q}}-answer" required id="id_{{q}}-answer" placeholder="Введите ответ">
+            </div>
+
+
+         <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <input type="checkbox" aria-label="Отметить как правильный"
+                               name="{{q}}-check" id="id_{{q}}-check" value="2">
+                    </div>
+                </div>
+                <input type="text" class="form-control" aria-label="Text input with checkbox"
+                       name="{{q}}-answer" required id="id_{{q}}-answer" placeholder="Введите ответ">
+            </div>
+
+
+         <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <input type="checkbox" aria-label="Отметить как правильный"
+                               name="{{q}}-check" id="id_{{q}}-check"  value="3">
+                    </div>
+                </div>
+                <input type="text" class="form-control" aria-label="Text input with checkbox"
+                       name="{{q}}-answer" required id="id_{{q}}-answer" placeholder="Введите ответ">
+            </div>
+
+         <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <input type="checkbox" aria-label="Отметить как правильный"
+                               name="{{q}}-check" id="id_{{q}}-check" value="4">
+                    </div>
+                </div>
+                <input type="text" class="form-control" aria-label="Text input with checkbox"
+                       name="{{q}}-answer" required id="id_{{q}}-answer" placeholder="Введите ответ">
+            </div>
+         {% endfor %}
+
+        {% csrf_token %}
+
+        <button type="submit" class="btn btn-primary" >Отправить</button>
+    </form>
+
+</div>
+{% endblock %}
+</body>

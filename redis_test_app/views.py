@@ -15,10 +15,12 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 
-from .forms import RegistrationForm, LoginForm
-from .models import Student
+from .forms import RegistrationForm, LoginForm, TestForm, QuestionForm, AnswerForm
+from .models import Student, Answer, Question, Test
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
@@ -33,7 +35,13 @@ class MyView(View):
         self._templates_name_list = ['setenviroment.html',
                                      'baseconstructions.html',
                                      'matplotlib.html',
-                                     'datacollect.html']
+                                     'datacollect.html',
+                                     'datasave.html',
+                                     'dataload.html',
+                                     'python_and_osc.html'
+
+
+                                     ]
         self._pass_template_name = kwargs['_pass_template_name']
         super().__init__()
 
@@ -50,6 +58,11 @@ class LoginView(View):
     def __init__(self):
         self._template_name = 'header.html'
         super().__init__()
+
+    def get(self, request):
+        return render(request, template_name=self._template_name, context={'begin_auth': True,
+                                                                           'msg': 'Чтобы пройти тест, вы должны '
+                                                                                  'авторизоваться или зарегистрироваться'})
 
     def post(self, request):
         form = LoginForm(request.POST)
@@ -99,3 +112,73 @@ class RegistrationView(View):
             form.saveuser()
             return render(request, template_name=self._template_name, context={'begin_auth': True, 'form': None})
         return render(request, template_name=self._template_name, context={'form': form})
+
+
+class TestView(View):
+
+    def __init__(self):
+        self._test_form = TestForm()
+        self._question_form = QuestionForm()
+        self._answer_form = AnswerForm()
+        super().__init__()
+
+    @method_decorator(login_required(login_url='/login/'))
+    def get(self, request):
+        test_id = request.GET.get('test_id', 0)
+        test_numbers = Test.objects.filter(id=test_id).first()
+        if not test_numbers:
+            return redirect('/')
+        questions, answers = self._answer_form.select_related_questions(test_id)
+        return render(request, template_name='tests/testview.html',
+                      context={'test_form': self._test_form,
+                               'question_form': self._question_form,
+                               'answer_form': self._answer_form,
+                               'questions': questions,
+                               'answers': answers
+                               })
+
+    @method_decorator(login_required(login_url='/login/'))
+    def post(self, request):
+        test_id = request.GET.get('test_id', 0)
+        questions, answers = self._answer_form.select_related_questions(test_id)
+        print(request.user.username)
+        result, right_questions = self._answer_form.check_answers(test_id, request.POST, request.user.username)
+
+        return render(request, template_name='tests/testview.html',
+                      context={'test_form': self._test_form,
+                               'question_form': self._question_form,
+                               'answer_form': self._answer_form,
+                               'questions': questions,
+                               'answers': answers,
+                               'result': result,
+                               'right_questions': right_questions
+                               })
+
+
+class TestCreateView(View):
+
+    def __init__(self):
+        self._test_form = TestForm()
+        self._question_form = QuestionForm()
+        self._answer_form = AnswerForm()
+        super().__init__()
+
+    @method_decorator(staff_member_required)
+    def get(self, request):
+        return render(request, template_name='custom_admin/test_create.html',
+                      context={'test_form': self._test_form,
+                               'question_form': self._question_form,
+                               'answer_form': self._answer_form,
+                               'question_nums': [1,2,3,4,5,6,7,8,9,10],
+                               })
+
+    @method_decorator(staff_member_required)
+    def post(self, request):
+        test = TestForm(request.POST)
+        print(test)
+        test_obj = test.save()
+        questions = QuestionForm().set_new_questions_by_test(test_obj, request.POST)
+        return redirect('/')
+
+class UserinfoView(View):
+    pass

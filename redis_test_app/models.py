@@ -31,3 +31,34 @@ class Student(User):
     #last_name = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
     group = models.IntegerField()
+
+
+class StudentTests(models.Model):
+    tests = models.ManyToManyField('test')
+    user = models.ForeignKey(Student, on_delete=models.CASCADE, default=None)
+    score = models.IntegerField(default=0)
+
+
+class Test(models.Model):
+    module_name = models.CharField(max_length=255, default=None)
+    test_name = models.CharField(max_length=255, default=None)
+
+    def __str__(self):
+        return str(self.test_name)
+
+
+class Question(models.Model):
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, default=None)
+    question = models.TextField(default=None)
+
+    def __str__(self):
+        return str(self.question)
+
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, default=None)
+    answer = models.TextField(default=None)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.answer)

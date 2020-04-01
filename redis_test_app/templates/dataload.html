@@ -1,0 +1,117 @@
+{% extends 'header.html' %}
+<style>
+</style>
+<body>
+    {% block content %}
+
+
+    <div class="jumbotron" id="top-jumbotron">
+        <p class="lead">Глава 2. Получение и визуализация данных эксперимента</p>
+      <h1 class="display-4">Загрузка данных из файла и их визуализация</h1>
+      <hr class="my-4">
+      <p>Итак, мы собрали данные с термопары и записали их в файл alpha.txt.
+Чтение файла и визуализация данных не представляет проблемы, но способ обработки списков имеет свои особенности. Приведём первый вариант программы:
+
+      </p>
+        <form>
+<textarea id="yourcode">
+import matplotlib.pyplot as plt
+data = []
+name = input('Введите имя файла данных (без расширения): ')
+with open(name+'.txt', 'r') as f:
+	rows = f.read().splitlines()
+for row in rows:
+	elems = row.split('\t')
+	data.append([int(elems[0]),
+				float(elems[1]), float(elems[2])])
+X = [d[1] for d in data]
+Y = [d[2] for d in data]
+plt.plot(X, Y, 'o', markersize=3)
+plt.show()
+
+</textarea>
+            <div class="text-right">
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="runit('yourcode', 'output', 'mycanvas')">Выполнить
+                </button>
+            </div>
+        </form>
+        <pre id="output" ></pre> <div id="mycanvas"></div>
+
+
+
+
+
+<p>Для упрощения работы с файлом здесь использована конструкция
+with, которая корректно отрабатывает открытие и закрытие файла. В этом
+примере мы не стали использовать библиотеку numpy. Читаем текстовый
+файл построчно, и эти строки записываются в список rows. Затем каждая
+строка списка разделяется на текстовые элементы с помощью метода
+split('\t') (в качестве разделителя используется знак табуляции). И, наконец, текстовые строки требуется преобразовать в необходимый формат,
+поскольку Python требует строгой типизации. Это выполняется с помощью функций int() и float(). Список data после этого стал иметь ту же
+структуру, что и в исходной программе, которая формировала этот файл.
+Однако, для того чтобы корректно отобразить данные на графике, нам
+нужно взять второй и третий столбцы списка. Не используя библиотеку
+numpy, вырезать столбец из data можно так, как показано в строках 11 и
+12, для этого потребовалось создавать дополнительные списки X и Y.
+А вот второй вариант программы чтения данных и отображения графика в случае, если мы будем использовать библиотеку numpy:
+</p>
+               <form>
+<textarea id="yourcode2">
+import matplotlib.pyplot as plt
+import numpy as np
+name = input('Введите имя файла (без расширения): ')
+data = np.genfromtxt(name+'.txt', delimiter='\t',
+					dtype = [('i', '<i8'), ('time', '<f8'), ('temp', '<f8')])
+plt.plot(data['time'], data['temp'], 'o', markersize=3)
+plt.show()
+</textarea>
+            <div class="text-right">
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="runit('yourcode2', 'output2', 'mycanvas2')">Выполнить
+                </button>
+            </div>
+        </form>
+        <pre id="output2" ></pre> <div id="mycanvas2"></div>
+
+
+
+
+        <p>
+            Как видим, программа существенно упростилась, однако следует обратить внимание на строки 5-6: импорт данных с помощью метода
+genfromtxt осуществляется в структурированный массив с именованными
+столбцами, при этом имена столбцов и тип данных указывается в списке
+значений параметра dtype. В случае, если тип не указан, он будет определяться по введённым значениям. Результат записывается в массив data,
+но структура этого массива отличается от списка предыдущей программы. В этой связи, для вывода графика в методе plot достаточно указать имя столбца в массиве data для выбора необходимых срезов матрицы
+(строка 7).
+Третий вариант с библиотекой pandas (если вы предполагаете использовать специальные алгоритмы обработки больших данных [28, 29])
+также может быть применён. В этом случае достаточно использовать для
+чтения файла метод read_csv так, как показано ниже. Вывод графика делается точно так же, как в предыдущем случае
+        </p>
+               <form>
+<textarea id="yourcode3">
+import pandas as pd
+headers = ['i','time','temp','free']
+data = pd.read_csv(name+'.txt', sep='\t', names=headers)
+</textarea>
+            <div class="text-right">
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="runit('yourcode3', 'output3', 'mycanvas3')">Выполнить
+                </button>
+            </div>
+        </form>
+        <pre id="output3" ></pre> <div id="mycanvas3"></div>
+
+
+<p>
+</p>
+
+
+
+        <div class="text-right"><button class="btn btn-outline-secondary" type="button" onclick="location.href='/python_and_osc/'">Следующая тема</button></div>
+
+    </div>
+
+
+    {% endblock %}
+</body>

@@ -1,0 +1,131 @@
+{% extends 'header.html' %}
+<style>
+</style>
+<body>
+    {% block content %}
+
+
+    <div class="jumbotron" id="top-jumbotron">
+        <p class="lead">Глава 2. Получение и визуализация данных эксперимента</p>
+      <h1 class="display-4">Сохранение данных в файл</h1>
+      <hr class="my-4">
+      <p>Теперь попробуем реализовать запись получаемых данных в файл. С
+точки зрения оптимального быстродействия для типичного эксперимента
+(если он не длится несколько суток и объём получаемых данных относительно невелик) логично сначала сохранять данные в список, который по
+окончанию (или прерыванию) процесса измерения может быть записан в
+файл на диске.
+
+      </p>
+        <form>
+<textarea id="yourcode">
+import nidaqmx
+import matplotlib.pyplot as plt
+import time
+# инициализация
+plt.ion()
+start = time.time()
+data = []
+i = 1
+print('Для завершения измерительного цикла нажмите Ctrl-C')
+with nidaqmx.Task() as task:
+	task.ai_channels.add_ai_thrmcpl_chan("Dev1/ai0",
+	units=nidaqmx.constants.TemperatureUnits.DEG_C,
+	thermocouple_type=nidaqmx.constants.ThermocoupleType.J)
+	try:
+		# получаем данные и отображаем их на графике
+		while True:
+			temp=task.read(number_of_samples_per_channel=1)
+		dtime = time.time()-start
+		res = temp[0]
+		plt.scatter(dtime, res, marker='*', s=4, c='g')
+		data.append([i, dtime, res])
+		plt.pause(0.5)
+		i = i + 1
+	except KeyboardInterrupt:
+		print('Измерения остановлены.')
+# записываем данные в файл
+name = input('Введите имя файла для записи данных: ')
+if len(name)>0:
+	try:
+		f = open(name+'.txt','w')
+		for row in data:
+			for element in row:
+				f.write('%s\t' % element)
+			f.write('\n')
+		print('Файл записан.')
+	except IOError:
+		print('Ошибка в процессе записи в файл!')
+	finally:
+		f.close()
+</textarea>
+            <div class="text-right">
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="runit('yourcode', 'output', 'mycanvas')">Выполнить
+                </button>
+            </div>
+        </form>
+        <pre id="output" ></pre> <div id="mycanvas"></div>
+
+
+
+
+
+<p>В строке 8 создаём пустой список, в строке 23 добавляем в него запись, содержащую порядковый номер, метку времени и измеренное значение. При записи в текстовый файл предполагаем, что каждая запись
+будет начинаться с новой строки, а числа будут разделены табуляцией.
+Для записи в файл мы использовали функции open… close. Аргумент ‘w’
+предполагает, что если файл с заданным именем уже существует на
+диске, он будет перезаписан. Если вас не устаивает такая ситуация, следует проверить существование файла с указанным именем перед записью, изменив строку программы для ввода имени файла следующим образом:
+</p>
+               <form>
+<textarea id="yourcode2">
+while True:
+	name = input('Введите имя файла для записи данных: ')
+	if os.path.isfile(name+'.txt'):
+		print('Файл с именем '+ name +'.txt уже существует!')
+	else:
+		break
+</textarea>
+            <div class="text-right">
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="runit('yourcode2', 'output2', 'mycanvas2')">Выполнить
+                </button>
+            </div>
+        </form>
+        <pre id="output2" ></pre> <div id="mycanvas2"></div>
+
+
+
+
+        <p>В предыдущем примере использован модуль os, который предоставляет набор функций для работы с операционной системой. Вот ещё несколько команд модуля os, которые могут быть полезными при разработке консольных приложений в среде Python:
+        </p>
+               <form>
+<textarea id="yourcode3">
+import os
+os.getcwd() # показать текущий рабочий каталог
+os.chdir("C:/WORK/") # поменять рабочий каталог
+os.system('cd c:\WORK') # выполнить консольную команду
+</textarea>
+            <div class="text-right">
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="runit('yourcode3', 'output3', 'mycanvas3')">Выполнить
+                </button>
+            </div>
+        </form>
+        <pre id="output3" ></pre> <div id="mycanvas3"></div>
+
+
+<p>
+    Обработка ошибок при записи файла (конструкция try… except… finally) необходима, если ваш код будет использоваться уже как готовый
+программный продукт, а при интерактивном взаимодействии с Python
+можно обойтись минимумом команд.
+</p>
+
+
+
+        <div class="text-right"><button class="btn btn-outline-secondary" type="button" onclick="location.href='/dataload/'">Следующая тема</button></div>
+
+    </div>
+
+
+    {% endblock %}
+</body>

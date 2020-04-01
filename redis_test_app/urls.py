@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import MyView, LoginView, LogoutView, RegistrationView
+from .views import MyView, LoginView, LogoutView, RegistrationView, TestView, TestCreateView, UserinfoView
 
 
 urlpatterns = [
@@ -38,7 +38,9 @@ urlpatterns = [
     path('database/', MyView.as_view(_pass_template_name='database.html')),
     path('final_comments/', MyView.as_view(_pass_template_name='final_comments.html')),
     path('', MyView.as_view(_pass_template_name='setenviroment.html')),
-    path('login/', LoginView.as_view()),
+    path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view()),
     path('registration/', RegistrationView.as_view()),
+    path('tests/', TestView.as_view()),
+    path('test_create/', TestCreateView.as_view()),
 ]
