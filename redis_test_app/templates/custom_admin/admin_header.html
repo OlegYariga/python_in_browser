@@ -1,0 +1,23 @@
+{% extends 'header.html' %}
+<body>
+        {% block content %}
+    <nav class="navbar navbar-light bg-white" id="admin_header">
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/testresults_view/' %}active{% endif %}" href="/testresults_view/">Результаты тестов</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/test_create/' %}active{% endif %}" href="/test_create/">Новый тест</a>
+          </li>
+            <li class="nav-item">
+            <a class="nav-link " href="/admin/">Admin-панель</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link " href="/">На главную</a>
+          </li>
+        </ul>
+    </nav>
+            {% block admin_content %}
+            {% endblock %}
+        {% endblock %}
+</body>

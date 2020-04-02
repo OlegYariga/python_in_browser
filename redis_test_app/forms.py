@@ -80,9 +80,24 @@ class AnswerForm(forms.ModelForm):
             student_test.score = result
             student_test.save()
         else:
+            if not Student.objects.filter(username=username).first():
+                return 0, 0
             st = StudentTests(user=Student.objects.filter(username=username).first(), score=result)
             st.save()
             st.tests.add(Test.objects.filter(id=test_id).first())
             st.save()
         return result, itog_list_of_questions
+
+
+class GroupViewForm(forms.Form):
+    group = forms.IntegerField(label='Номер группы')
+
+    def select_related_students(self, group):
+        tests = Test.objects.all()
+        if group:
+            students = Student.objects.filter(group=group)
+        else:
+            students = Student.objects.all()
+        student_tests = StudentTests.objects.filter(user__in=students)
+        return tests, students, student_tests
 

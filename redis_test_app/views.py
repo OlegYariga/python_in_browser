@@ -19,13 +19,21 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
 
-from .forms import RegistrationForm, LoginForm, TestForm, QuestionForm, AnswerForm
+from .forms import RegistrationForm, LoginForm, TestForm, QuestionForm, AnswerForm, GroupViewForm
 from .models import Student, Answer, Question, Test
 
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 
-class MyView(View):
+class TestSelector:
+    _tests = Test.objects.all()
+
+    @property
+    def tests(self):
+        return self._tests
+
+
+class MyView(View, TestSelector):
     """
         Base view for the part one
     """
@@ -47,11 +55,11 @@ class MyView(View):
 
     def get(self, request):
         if self._pass_template_name in self._templates_name_list:
-            return render(request, template_name=self._pass_template_name)
-        return redirect('/')
+            return render(request, template_name=self._pass_template_name, context={'all_tests': self.tests})
+        return redirect('/', context={'all_tests': self.tests})
 
 
-class LoginView(View):
+class LoginView(View, TestSelector):
     """
     Provides the ability to login as a user with a username and password
     """
@@ -62,7 +70,8 @@ class LoginView(View):
     def get(self, request):
         return render(request, template_name=self._template_name, context={'begin_auth': True,
                                                                            'msg': 'Чтобы пройти тест, вы должны '
-                                                                                  'авторизоваться или зарегистрироваться'})
+                                                                                  'авторизоваться или зарегистрироваться',
+                                                                           'all_tests': self.tests})
 
     def post(self, request):
         form = LoginForm(request.POST)
@@ -75,10 +84,12 @@ class LoginView(View):
                     return redirect('/')
                 else:
                     return render(request, template_name=self._template_name, context={'begin_auth': True, 'form': form,
-                                                                                       'msg':'User is disabled by admin'})
+                                                                                       'msg':'User is disabled by admin',
+                                                                                       'all_tests': self.tests})
             else:
                 return render(request, template_name=self._template_name, context={'begin_auth': True, 'form': form,
-                                                                                   'msg':'Invalid email or password'})
+                                                                                   'msg':'Invalid email or password',
+                                                                                   'all_tests': self.tests})
 
 
 class LogoutView(RedirectView):
@@ -94,7 +105,7 @@ class LogoutView(RedirectView):
         return redirect("/")
 
 
-class RegistrationView(View):
+class RegistrationView(View, TestSelector):
     """
         Provides users the ability to register in system
     """
@@ -110,11 +121,13 @@ class RegistrationView(View):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.saveuser()
-            return render(request, template_name=self._template_name, context={'begin_auth': True, 'form': None})
-        return render(request, template_name=self._template_name, context={'form': form})
+            return render(request, template_name=self._template_name, context={'begin_auth': True, 'form': None,
+                                                                               'all_tests': self.tests})
+        return render(request, template_name=self._template_name, context={'form': form,
+                                                                           'all_tests': self.tests})
 
 
-class TestView(View):
+class TestView(View, TestSelector):
 
     def __init__(self):
         self._test_form = TestForm()
@@ -134,7 +147,8 @@ class TestView(View):
                                'question_form': self._question_form,
                                'answer_form': self._answer_form,
                                'questions': questions,
-                               'answers': answers
+                               'answers': answers,
+                               'all_tests': self.tests
                                })
 
     @method_decorator(login_required(login_url='/login/'))
@@ -151,11 +165,12 @@ class TestView(View):
                                'questions': questions,
                                'answers': answers,
                                'result': result,
-                               'right_questions': right_questions
+                               'right_questions': right_questions,
+                               'all_tests': self.tests
                                })
 
 
-class TestCreateView(View):
+class TestCreateView(View, TestSelector):
 
     def __init__(self):
         self._test_form = TestForm()
@@ -170,6 +185,7 @@ class TestCreateView(View):
                                'question_form': self._question_form,
                                'answer_form': self._answer_form,
                                'question_nums': [1,2,3,4,5,6,7,8,9,10],
+                               'all_tests': self.tests
                                })
 
     @method_decorator(staff_member_required)
@@ -180,5 +196,33 @@ class TestCreateView(View):
         questions = QuestionForm().set_new_questions_by_test(test_obj, request.POST)
         return redirect('/')
 
-class UserinfoView(View):
-    pass
+
+class TestResultsView(View, TestSelector):
+
+    def __init__(self):
+        self._template_name = 'custom_admin/testresults_view.html'
+        super().__init__()
+
+    @method_decorator(staff_member_required)
+    def get(self, request):
+        form = GroupViewForm()
+        tests, students, student_tests = GroupViewForm().select_related_students(group=None)
+        return render(request, template_name=self._template_name, context={'form': form,
+                                                                           'tests':tests,
+                                                                           'students': students,
+                                                                           'student_tests': student_tests,
+                                                                           'all_tests': self.tests
+                                                                           })
+
+    @method_decorator(staff_member_required)
+    def post(self, request):
+        form = GroupViewForm(request.POST)
+        if form.is_valid():
+            tests, students, student_tests = GroupViewForm().select_related_students(group=form.cleaned_data['group'])
+            return render(request, template_name=self._template_name, context={'tests':tests,
+                                                                               'students': students,
+                                                                               'student_tests': student_tests,
+                                                                               'all_tests': self.tests
+                                                                               })
+        return redirect('/')
+

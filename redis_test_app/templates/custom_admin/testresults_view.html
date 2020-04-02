@@ -1,0 +1,47 @@
+{% extends 'custom_admin/admin_header.html' %}
+
+<body>
+{% block admin_content %}
+<div class="jumbotron" id="top-jumbotron">
+    <h1 class="display-5">Результаты тестов</h1>
+
+  <p class="lead">&nbsp;</p>
+        <form class="form-inline" method="POST">
+        {% csrf_token %}
+          <div class="form-group mx-sm-3 mb-2">
+            {{ form.group.errors }}
+            <input type="number" name="group" required id="id_group"
+                   class="form-control" placeholder="Номер группы"
+                   value="{% if form.group.value != None %}{{form.group.value}} {% endif %}">
+          </div>
+            <button type="submit" class="btn btn-primary mb-2" >Посмотреть статистику по группе</button>
+        </form>
+        <span></span>
+    {% for st in students %}
+    <table class="table table-sm">
+          <thead>
+            <tr>
+                <th>Студент: {{st.first_name}} {{st.last_name}} ({{st.username}})</th>
+                <th>Наилучший результат</th>
+            </tr>
+          </thead>
+          <tbody>
+          <col width="50%">
+            {% for t in tests %}
+            <tr>
+                <td>{{t.test_name}}</td>
+                {% for st_test in student_tests %}
+                    {% if t in st_test.tests.all and st_test.user == st %}
+                        <td>{{st_test.score}}%</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+     {% endfor %}
+
+
+</div>
+{% endblock %}
+</body>
